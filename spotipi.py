@@ -27,7 +27,7 @@ def get_access_token(client_id, client_secret):
     return None
 
 # gets random song from playlist
-def get_random_song(access_token, playlist_id, choice='song'):
+def get_random_song(access_token, playlist_id, choice):
     headers = {
         'Authorization': 'Bearer {}'.format(access_token)
     }
@@ -39,35 +39,26 @@ def get_random_song(access_token, playlist_id, choice='song'):
             item_name = random_track['track']['name']
             artist_name = random_track['track']['artists'][0]['name']
         elif choice == 'artist':
-            item_name = random_track['track']['artists'][0]['name']      
-            artist_name = None 
-        else:
-            return None, None
+            item_name = None      
+            artist_name = random_track['track']['artists'][0]['name']
         return item_name, artist_name
     return None, None
 
-
-# retrieves access token, code actually runs from here !!!
 access_token = get_access_token(client_id, client_secret)
 
 if access_token: #checks to see if we have access token
-    choice = input("Enter 'song' to get a random song or 'artist' to get a random artist: ").lower()
-    if choice in ['song','artist']:
-        for i in range(5):
+    while True:
+        choice = input("Enter 'song' to get a random song or 'artist' to get a random artist or anything else to quit: ").lower()
+        if choice in ['song','artist']:
+            for i in range(5):
         # playlist ID from spotify
-            playlist_id = '37i9dQZF1DXcBWIGoYBM5M'
+                playlist_id = '37i9dQZF1DXcBWIGoYBM5M'
         # Get a random song
-            item_name, artist_name = get_random_song(access_token, playlist_id, choice)
-            if item_name and artist_name:
-                if choice == 'song':
+                item_name, artist_name = get_random_song(access_token, playlist_id, choice)
+                if item_name and artist_name:
                     print("Random Song: {} by {}".format(item_name, artist_name))
-                else:
+                elif artist_name:
                     print("Random Artist: {}".format(artist_name))
-            else:
-                print("Failed to fetch data from the playlist")
         else:
-            print("Invalid choice. Please choose either 'song' or 'artist.")
-    else:
-        print("Failed to get access token")
-
-  
+            break
+                    
