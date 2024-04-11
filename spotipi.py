@@ -39,19 +39,42 @@ def get_random_song(playlist_id, choice):
         return item_name, artist_name
     return None, None
 
+def get_playlist_details(access_token, playlist_id):
+    headers = {
+        'Authorization': 'Bearer {}'.format(access_token)
+    }
+    response = requests.get('https://api.spotify.com/v1/playlists/{}'.format(playlist_id), headers=headers)
+    if response.status_code in range(200, 299):
+        playlist_data = response.json()
+        playlist_name = playlist_data['name']
+        playlist_description = playlist_data['description']
+        number_of_tracks = playlist_data['tracks']['total']
+        return playlist_name, playlist_description, number_of_tracks
+    return None, None, None
+
 access_token = get_access_token(client_id, client_secret)
+playlist_id = '37i9dQZF1DXcBWIGoYBM5M'
 
 if access_token:
     while True:
-        choice = input("Enter 'song' to get a random song or 'artist' to get a random artist or anything else to quit: ").lower()
+        print("Enter 'song' to get a random song from the current playlist")
+        print("Enter 'artist' to get a random artist from the current playlist")
+        print("Enter 'playlist' to change the current playlist")
+        choice = input("Enter anything else to quit: ").lower()
         if choice in ['song','artist']:
-            playlist_id = '37i9dQZF1DXcBWIGoYBM5M'
             for i in range(5):   
                 item_name, artist_name = get_random_song(playlist_id, choice)
                 if item_name and artist_name:
                     print("Random Song: {} by {}".format(item_name, artist_name))
                 elif artist_name:
                     print("Random Artist: {}".format(artist_name))
+        elif choice in ['playlist']:
+            name, desc, tracks = get_playlist_details(access_token, playlist_id)
+            print("Previous Playlist: {} with {} songs".format(name, tracks))
+            play = input("enter the new playlist ID.")
+            playlist_id = play
+            name, desc, tracks = get_playlist_details(access_token, play)
+            print("Selected Playlist: {} with {} songs".format(name, tracks))
         else:
             break
                     
