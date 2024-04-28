@@ -39,6 +39,12 @@ def get_random_song(playlist_id, choice):
         return item_name, artist_name
     return None, None
 
+playlists = [
+    "37i9dQZF1DXcBWIGoYBM5M",
+    "37i9dQZF1DWYBO1MoTDhZI",
+    "37i9dQZF1DX0jgyAiPl8Af"
+]
+
 def get_playlist_details(access_token, playlist_id):
     headers = {
         'Authorization': 'Bearer {}'.format(access_token)
@@ -61,6 +67,7 @@ if access_token:
         print("Enter 'artist' to get a random artist from the current playlist")
         print("Enter 'playlist' to change the current playlist")
         choice = input("Enter anything else to quit: ").lower()
+
         if choice in ['song','artist']:
             for i in range(5):   
                 item_name, artist_name = get_random_song(playlist_id, choice)
@@ -68,13 +75,39 @@ if access_token:
                     print("Random Song: {} by {}".format(item_name, artist_name))
                 elif artist_name:
                     print("Random Artist: {}".format(artist_name))
-        elif choice in ['playlist']:
-            name, desc, tracks = get_playlist_details(access_token, playlist_id)
-            print("Previous Playlist: {} with {} songs".format(name, tracks))
-            play = input("enter the new playlist ID.")
-            playlist_id = play
-            name, desc, tracks = get_playlist_details(access_token, play)
-            print("Selected Playlist: {} with {} songs".format(name, tracks))
+                    
+        elif choice == 'playlist':
+            print("Enter 'list' to see all playlists")
+            print("'switch' to change the playlist")
+            print("'add' to add a new playlist")
+            action = input("Choose an action: ").strip().lower()
+
+            if action == 'list':
+                print("Available Playlists:")
+                index = 1
+                for plist in playlists:
+                    print(f"{index}. Playlist ID: {plist}")
+                    index += 1
+
+            elif action == 'switch':
+                selection = input("Enter the number of the playlist you want to switch to:")
+                if selection.isdigit():
+                    playlist_index = int(selection) - 1
+                    if 0 <= playlist_index < len(playlists):
+                        playlist_id = playlists[playlist_index]
+                        print(f"Switched to playlist with ID: {playlist_id}")
+                    else:
+                        print("Invalid selection. Number does not exist in list.")
+                else:
+                    print("Please enter a valid number.")
+
+            elif action == 'add':
+                new_playlist_id = input("Enter the new playlist ID: ")
+                playlists.append(new_playlist_id)
+                print("added successfully")
+
+            else:
+                print("invalid action, try again :(")
         else:
             break
                     
